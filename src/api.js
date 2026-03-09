@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://turfbooking-mern-backend.onrender.com",
+  baseURL: "https://turfbooking-mern-backend.onrender.com/api",
 });
 
 API.interceptors.request.use(
