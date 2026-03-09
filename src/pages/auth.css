@@ -613,40 +613,67 @@ input {
   }
 }
 @media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .full-bg {
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   .site-header {
-    padding: 10px 14px;
+    padding: 10px 12px;
   }
 
   .nav-inner {
+    display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     align-items: center;
+    justify-content: center;
+  }
+
+  .brand {
+    text-align: center;
   }
 
   .brand-text {
-    font-size: 22px;
+    font-size: 24px;
+    line-height: 1.2;
   }
 
   .nav-links {
     width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
   }
 
   .nav-btn {
     width: 90%;
     max-width: 260px;
+    font-size: 15px;
+    padding: 12px 16px;
   }
 
   .page-main {
-    padding: 20px 12px;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .hero-card {
     width: 100%;
-    min-height: 280px;
+    max-width: 360px;
+    min-height: 260px;
     padding: 20px;
     border-radius: 18px;
+    margin: 0 auto;
   }
 
   .hero-card h1 {
@@ -664,24 +691,38 @@ input {
 
   .auth-wrapper {
     width: 100%;
-    padding: 10px;
+    max-width: 100%;
+    padding: 0 10px;
+    position: relative;
+  }
+
+  .close-auth {
+    top: 10px;
+    right: 16px;
+    z-index: 1000;
   }
 
   .cont {
-    width: 100%;
-    min-height: auto;
-    height: auto;
+    width: 100% !important;
+    max-width: 360px;
+    min-height: auto !important;
+    height: auto !important;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     border-radius: 18px;
+    overflow: hidden;
+    position: relative;
   }
 
   .form {
-    position: static !important;
+    position: relative !important;
     width: 100% !important;
     height: auto !important;
-    padding: 30px 20px !important;
+    padding: 28px 20px !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
   }
 
   .sign-in,
@@ -691,21 +732,25 @@ input {
   }
 
   .sub-cont {
-    position: static !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     height: auto !important;
     transform: none !important;
   }
 
   .img {
-    width: 100% !important;
-    height: 200px !important;
-    transform: none !important;
     position: relative !important;
+    width: 100% !important;
+    height: 180px !important;
+    transform: none !important;
+    left: 0 !important;
+    top: 0 !important;
   }
 
   .img__text {
-    padding: 20px;
+    padding: 18px;
     text-align: center;
   }
 
@@ -715,21 +760,32 @@ input {
   }
 
   .img__btn {
-    position: static !important;
-    margin: 12px auto 0;
+    position: relative !important;
+    margin: 10px auto 0;
     width: 160px;
+    left: 0 !important;
+    bottom: auto !important;
+    transform: none !important;
   }
 
   .cont.s--signup .sub-cont,
   .cont.s--signup .img,
+  .cont.s--signup .form,
   .cont.s--signup .sign-in,
   .cont.s--signup .sign-up {
     transform: none !important;
+    left: 0 !important;
   }
 
   .form h2 {
-    font-size: 24px;
+    font-size: 28px;
     text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .form label {
+    display: block;
+    width: 100%;
   }
 
   .form label span {
@@ -737,7 +793,7 @@ input {
   }
 
   .form input {
-    width: 100%;
+    width: 100% !important;
     font-size: 16px;
   }
 
@@ -745,30 +801,34 @@ input {
     width: 100%;
   }
 
-  .close-auth {
-    top: 8px;
-    right: 8px;
-    z-index: 20;
-  }
-
   .premium-footer {
-    padding: 24px 14px;
+    width: 100%;
+    padding: 24px 16px;
+    overflow-x: hidden;
   }
 
   .footer-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
     text-align: center;
+  }
+
+  .footer-left,
+  .footer-links,
+  .footer-contact {
+    width: 100%;
   }
 
   .footer-links ul {
     padding: 0;
+    margin: 0;
+    list-style: none;
   }
 
   .social-icons {
-    justify-content: center;
     display: flex;
+    justify-content: center;
     gap: 12px;
   }
 }
