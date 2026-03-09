@@ -482,3 +482,51 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .nav-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-container input {
+    width: 100%;
+  }
+
+  .turf-grid {
+    grid-template-columns: 1fr;
+    justify-content: center;
+  }
+
+  .turf-card {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .modal-box {
+    width: 95%;
+    padding: 16px;
+  }
+
+  .slot-grid {
+    grid-template-columns: 1fr;
+  }
+}

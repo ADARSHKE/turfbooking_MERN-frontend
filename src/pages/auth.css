@@ -612,3 +612,163 @@ input {
     transform: translateX(0) rotate(360deg);
   }
 }
+@media (max-width: 768px) {
+  .site-header {
+    padding: 10px 14px;
+  }
+
+  .nav-inner {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .brand-text {
+    font-size: 22px;
+  }
+
+  .nav-links {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .nav-btn {
+    width: 90%;
+    max-width: 260px;
+  }
+
+  .page-main {
+    padding: 20px 12px;
+  }
+
+  .hero-card {
+    width: 100%;
+    min-height: 280px;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .hero-card h1 {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .hero-card p {
+    font-size: 14px;
+  }
+
+  .hero-cta {
+    width: 100%;
+  }
+
+  .auth-wrapper {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .cont {
+    width: 100%;
+    min-height: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 18px;
+  }
+
+  .form {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 30px 20px !important;
+  }
+
+  .sign-in,
+  .sign-up {
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .sub-cont {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  .img {
+    width: 100% !important;
+    height: 200px !important;
+    transform: none !important;
+    position: relative !important;
+  }
+
+  .img__text {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .img__text h3 {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .img__btn {
+    position: static !important;
+    margin: 12px auto 0;
+    width: 160px;
+  }
+
+  .cont.s--signup .sub-cont,
+  .cont.s--signup .img,
+  .cont.s--signup .sign-in,
+  .cont.s--signup .sign-up {
+    transform: none !important;
+  }
+
+  .form h2 {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .form label span {
+    font-size: 14px;
+  }
+
+  .form input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .submit {
+    width: 100%;
+  }
+
+  .close-auth {
+    top: 8px;
+    right: 8px;
+    z-index: 20;
+  }
+
+  .premium-footer {
+    padding: 24px 14px;
+  }
+
+  .footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .footer-links ul {
+    padding: 0;
+  }
+
+  .social-icons {
+    justify-content: center;
+    display: flex;
+    gap: 12px;
+  }
+}
