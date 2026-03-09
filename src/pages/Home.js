@@ -13,6 +13,81 @@ import turf7 from "../assets/TURF7.jpg";
 import turf8 from "../assets/TURF8.jpg";
 import turf9 from "../assets/TURF9.jpg";
 
+const fallbackTurfs = [
+  {
+    id: 1,
+    name: "Green Field Turf",
+    location: "Thrissur",
+    pricePerHour: 1200,
+    image: turf1,
+    description: "",
+  },
+  {
+    id: 2,
+    name: "Elite Sports Arena",
+    location: "Ernakulam",
+    pricePerHour: 1500,
+    image: turf2,
+    description: "",
+  },
+  {
+    id: 3,
+    name: "Victory Turf",
+    location: "Kochi",
+    pricePerHour: 1000,
+    image: turf3,
+    description: "",
+  },
+  {
+    id: 4,
+    name: "Soccer Turf",
+    location: "Vytilla",
+    pricePerHour: 1000,
+    image: turf4,
+    description: "",
+  },
+  {
+    id: 5,
+    name: "CR7 Turf",
+    location: "Kakkanad",
+    pricePerHour: 1200,
+    image: turf5,
+    description: "",
+  },
+  {
+    id: 6,
+    name: "Star Sports Turf",
+    location: "Tripunithura",
+    pricePerHour: 1500,
+    image: turf6,
+    description: "",
+  },
+  {
+    id: 7,
+    name: "Lets Match Turf",
+    location: "Vazhakkala",
+    pricePerHour: 1000,
+    image: turf7,
+    description: "",
+  },
+  {
+    id: 8,
+    name: "Play Zone Turf",
+    location: "Karingachira",
+    pricePerHour: 1000,
+    image: turf8,
+    description: "",
+  },
+  {
+    id: 9,
+    name: "Kick Off Turf",
+    location: "Kaloor",
+    pricePerHour: 1000,
+    image: turf9,
+    description: "",
+  },
+];
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -32,82 +107,6 @@ const Home = () => {
 
   const [turfs, setTurfs] = useState([]);
   const [loadingTurfs, setLoadingTurfs] = useState(true);
-
-  // fallback local turfs if database has none
-  const fallbackTurfs = [
-    {
-      id: 1,
-      name: "Green Field Turf",
-      location: "Thrissur",
-      pricePerHour: 1200,
-      image: turf1,
-      description: "",
-    },
-    {
-      id: 2,
-      name: "Elite Sports Arena",
-      location: "Ernakulam",
-      pricePerHour: 1500,
-      image: turf2,
-      description: "",
-    },
-    {
-      id: 3,
-      name: "Victory Turf",
-      location: "Kochi",
-      pricePerHour: 1000,
-      image: turf3,
-      description: "",
-    },
-    {
-      id: 4,
-      name: "Soccer Turf",
-      location: "Vytilla",
-      pricePerHour: 1000,
-      image: turf4,
-      description: "",
-    },
-    {
-      id: 5,
-      name: "CR7 Turf",
-      location: "Kakkanad",
-      pricePerHour: 1200,
-      image: turf5,
-      description: "",
-    },
-    {
-      id: 6,
-      name: "Star Sports Turf",
-      location: "Tripunithura",
-      pricePerHour: 1500,
-      image: turf6,
-      description: "",
-    },
-    {
-      id: 7,
-      name: "Lets Match Turf",
-      location: "Vazhakkala",
-      pricePerHour: 1000,
-      image: turf7,
-      description: "",
-    },
-    {
-      id: 8,
-      name: "Play Zone Turf",
-      location: "Karingachira",
-      pricePerHour: 1000,
-      image: turf8,
-      description: "",
-    },
-    {
-      id: 9,
-      name: "Kick Off Turf",
-      location: "Kaloor",
-      pricePerHour: 1000,
-      image: turf9,
-      description: "",
-    },
-  ];
 
   useEffect(() => {
     const fetchTurfs = async () => {
