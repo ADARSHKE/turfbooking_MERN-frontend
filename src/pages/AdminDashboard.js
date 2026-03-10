@@ -14,6 +14,26 @@ function AdminDashboard() {
     return stored ? JSON.parse(stored) : [];
   });
 
+  const [blockedSlots, setBlockedSlots] = useState(() => {
+    const stored = localStorage.getItem("blockedSlots");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [blockData, setBlockData] = useState({
+    turfId: "",
+    date: "",
+    time: "",
+  });
+
+  const timeSlots = [
+    "6 AM - 7 AM",
+    "7 AM - 8 AM",
+    "8 AM - 9 AM",
+    "5 PM - 6 PM",
+    "6 PM - 7 PM",
+    "7 PM - 8 PM",
+  ];
+
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -35,9 +55,14 @@ function AdminDashboard() {
   useEffect(() => {
     fetchTurfs();
 
-    const stored = localStorage.getItem("allBookings");
-    if (stored) {
-      setAllBookings(JSON.parse(stored));
+    const storedBookings = localStorage.getItem("allBookings");
+    if (storedBookings) {
+      setAllBookings(JSON.parse(storedBookings));
+    }
+
+    const storedBlockedSlots = localStorage.getItem("blockedSlots");
+    if (storedBlockedSlots) {
+      setBlockedSlots(JSON.parse(storedBlockedSlots));
     }
   }, []);
 
@@ -74,18 +99,10 @@ function AdminDashboard() {
       }
 
       if (editId) {
-        await API.put(`/turfs/${editId}`, data, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await API.put(`/turfs/${editId}`, data);
         alert("Turf updated successfully");
       } else {
-        await API.post("/turfs", data, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await API.post("/turfs", data);
         alert("Turf added successfully");
       }
 
@@ -98,26 +115,90 @@ function AdminDashboard() {
 
   const handleEdit = (turf) => {
     setEditId(turf._id);
+
     setFormData({
       name: turf.name,
       location: turf.location,
       pricePerHour: turf.pricePerHour,
       description: turf.description || "",
     });
+
     setImageFile(null);
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this turf?");
+    const confirmDelete = window.confirm("Delete this turf?");
     if (!confirmDelete) return;
 
     try {
       await API.delete(`/turfs/${id}`);
-      alert("Turf deleted successfully");
+      alert("Deleted successfully");
       fetchTurfs();
-    } catch (error) {
-      alert(error.response?.data?.message || "Delete failed");
+    } catch {
+      alert("Delete failed");
     }
+  };
+
+  const handleBlockChange = (e) => {
+    setBlockData({
+      ...blockData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleBlockSlot = () => {
+    const { turfId, date, time } = blockData;
+
+    if (!turfId || !date || !time) {
+      return alert("Select turf, date and slot");
+    }
+
+    const alreadyBlocked = blockedSlots.find(
+      (slot) =>
+        String(slot.turfId) === String(turfId) &&
+        slot.date === date &&
+        slot.time === time
+    );
+
+    if (alreadyBlocked) {
+      return alert("This slot is already blocked");
+    }
+
+    const alreadyBooked = allBookings.find(
+      (booking) =>
+        String(booking.turfId) === String(turfId) &&
+        booking.date === date &&
+        booking.time === time
+    );
+
+    if (alreadyBooked) {
+      return alert("This slot is already booked by a user");
+    }
+
+    const newBlock = {
+      id: Date.now(),
+      turfId,
+      date,
+      time,
+    };
+
+    const updated = [...blockedSlots, newBlock];
+    setBlockedSlots(updated);
+    localStorage.setItem("blockedSlots", JSON.stringify(updated));
+
+    alert("Slot blocked");
+
+    setBlockData({
+      turfId: "",
+      date: "",
+      time: "",
+    });
+  };
+
+  const handleUnblock = (id) => {
+    const updated = blockedSlots.filter((slot) => slot.id !== id);
+    setBlockedSlots(updated);
+    localStorage.setItem("blockedSlots", JSON.stringify(updated));
   };
 
   const handleLogout = () => {
@@ -133,9 +214,13 @@ function AdminDashboard() {
         <h2>Admin Dashboard</h2>
 
         <div style={styles.topBtns}>
-          <button onClick={() => setShowBookings(true)} style={styles.bookingBtn}>
+          <button
+            onClick={() => setShowBookings(true)}
+            style={styles.bookingBtn}
+          >
             View Bookings
           </button>
+
           <button onClick={handleLogout} style={styles.logoutBtn}>
             Logout
           </button>
@@ -179,7 +264,6 @@ function AdminDashboard() {
 
             <input
               type="file"
-              accept="image/*"
               onChange={(e) => setImageFile(e.target.files[0])}
               style={styles.input}
             />
@@ -189,22 +273,84 @@ function AdminDashboard() {
               placeholder="Description"
               value={formData.description}
               onChange={handleChange}
-              rows="4"
               style={styles.textarea}
             />
 
-            <div style={styles.btnRow}>
-              <button type="submit" style={styles.saveBtn}>
-                {editId ? "Update Turf" : "Add Turf"}
-              </button>
-
-              {editId && (
-                <button type="button" onClick={resetForm} style={styles.cancelBtn}>
-                  Cancel
-                </button>
-              )}
-            </div>
+            <button type="submit" style={styles.saveBtn}>
+              {editId ? "Update Turf" : "Add Turf"}
+            </button>
           </form>
+
+          <h3 style={{ marginTop: 20 }}>Block Slot</h3>
+
+          <select
+            name="turfId"
+            value={blockData.turfId}
+            onChange={handleBlockChange}
+            style={styles.input}
+          >
+            <option value="">Select Turf</option>
+
+            {turfs.map((turf) => (
+              <option key={turf._id} value={turf._id}>
+                {turf.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            name="date"
+            value={blockData.date}
+            onChange={handleBlockChange}
+            style={styles.input}
+          />
+
+          <select
+            name="time"
+            value={blockData.time}
+            onChange={handleBlockChange}
+            style={styles.input}
+          >
+            <option value="">Select Slot</option>
+
+            {timeSlots.map((slot) => (
+              <option key={slot} value={slot}>
+                {slot}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={handleBlockSlot} style={styles.saveBtn}>
+            Block Slot
+          </button>
+
+          <h3 style={{ marginTop: 20 }}>Blocked Slots</h3>
+
+          {blockedSlots.length === 0 ? (
+            <p>No blocked slots</p>
+          ) : (
+            blockedSlots.map((slot) => {
+              const turfName =
+                turfs.find((t) => String(t._id) === String(slot.turfId))?.name ||
+                "Unknown Turf";
+
+              return (
+                <div key={slot.id} style={styles.bookingCard}>
+                  <p><strong>Turf:</strong> {turfName}</p>
+                  <p><strong>Date:</strong> {slot.date}</p>
+                  <p><strong>Time:</strong> {slot.time}</p>
+
+                  <button
+                    onClick={() => handleUnblock(slot.id)}
+                    style={styles.deleteBtn}
+                  >
+                    Unblock
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
 
         <div style={styles.listCard}>
@@ -224,10 +370,17 @@ function AdminDashboard() {
                   <p><strong>Description:</strong> {turf.description}</p>
 
                   <div style={styles.actionRow}>
-                    <button onClick={() => handleEdit(turf)} style={styles.editBtn}>
+                    <button
+                      onClick={() => handleEdit(turf)}
+                      style={styles.editBtn}
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleDelete(turf._id)} style={styles.deleteBtn}>
+
+                    <button
+                      onClick={() => handleDelete(turf._id)}
+                      style={styles.deleteBtn}
+                    >
                       Delete
                     </button>
                   </div>
@@ -249,7 +402,7 @@ function AdminDashboard() {
               allBookings.map((booking) => (
                 <div key={booking.id} style={styles.bookingCard}>
                   <h3>{booking.turfName}</h3>
-                  <p><strong>User:</strong> {booking.userId}</p>
+                  <p><strong>User:</strong> {booking.userId || "Unknown User"}</p>
                   <p><strong>Date:</strong> {booking.date}</p>
                   <p><strong>Time:</strong> {booking.time}</p>
                   <p><strong>Payment:</strong> {booking.paymentStatus || "Pending"}</p>
@@ -257,7 +410,10 @@ function AdminDashboard() {
               ))
             )}
 
-            <button onClick={() => setShowBookings(false)} style={styles.closeBtn}>
+            <button
+              onClick={() => setShowBookings(false)}
+              style={styles.closeBtn}
+            >
               Close
             </button>
           </div>
@@ -269,15 +425,17 @@ function AdminDashboard() {
 
 const styles = {
   page: {
-    minHeight: "100vh",
+    padding: 20,
     background: "#f4f6f8",
-    padding: "20px",
+    minHeight: "100vh",
   },
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "10px",
     marginBottom: "20px",
+    flexWrap: "wrap",
   },
   topBtns: {
     display: "flex",
@@ -302,92 +460,84 @@ const styles = {
   container: {
     display: "grid",
     gridTemplateColumns: "1fr 2fr",
-    gap: "20px",
+    gap: 20,
   },
   formCard: {
     background: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    padding: 20,
+    borderRadius: 12,
   },
   listCard: {
     background: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    padding: 20,
+    borderRadius: 12,
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: 10,
   },
   input: {
-    padding: "12px",
+    padding: 10,
+    borderRadius: 6,
     border: "1px solid #ccc",
-    borderRadius: "8px",
+    marginBottom: "10px",
+    width: "100%",
+    boxSizing: "border-box",
   },
   textarea: {
-    padding: "12px",
+    padding: 10,
+    borderRadius: 6,
     border: "1px solid #ccc",
-    borderRadius: "8px",
-    resize: "vertical",
-  },
-  btnRow: {
-    display: "flex",
-    gap: "10px",
+    minHeight: "90px",
+    marginBottom: "10px",
+    width: "100%",
+    boxSizing: "border-box",
   },
   saveBtn: {
     background: "#0d6efd",
     color: "#fff",
+    padding: 10,
     border: "none",
-    padding: "12px",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-  cancelBtn: {
-    background: "#6c757d",
-    color: "#fff",
-    border: "none",
-    padding: "12px",
     borderRadius: "8px",
     cursor: "pointer",
   },
   turfItem: {
     display: "flex",
-    gap: "16px",
+    gap: 10,
+    marginBottom: 12,
     border: "1px solid #e5e5e5",
-    padding: "12px",
-    borderRadius: "12px",
-    marginBottom: "16px",
+    borderRadius: 12,
+    padding: 12,
   },
   image: {
-    width: "180px",
-    height: "130px",
+    width: 120,
+    height: 80,
     objectFit: "cover",
-    borderRadius: "10px",
+    borderRadius: 8,
   },
   info: {
     flex: 1,
   },
   actionRow: {
     display: "flex",
-    gap: "10px",
-    marginTop: "10px",
+    gap: 10,
+    marginTop: 10,
   },
   editBtn: {
-    background: "#198754",
+    background: "green",
     color: "#fff",
+    padding: "8px 12px",
     border: "none",
-    padding: "10px 14px",
-    borderRadius: "8px",
+    borderRadius: 6,
     cursor: "pointer",
   },
   deleteBtn: {
-    background: "#dc3545",
+    background: "red",
     color: "#fff",
+    padding: "8px 12px",
     border: "none",
-    padding: "10px 14px",
-    borderRadius: "8px",
+    borderRadius: 6,
     cursor: "pointer",
   },
   modalOverlay: {
@@ -398,6 +548,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+    padding: 16,
   },
   modalBox: {
     width: "90%",

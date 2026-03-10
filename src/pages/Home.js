@@ -88,6 +88,15 @@ const fallbackTurfs = [
   },
 ];
 
+const timeSlots = [
+  "6 AM - 7 AM",
+  "7 AM - 8 AM",
+  "8 AM - 9 AM",
+  "5 PM - 6 PM",
+  "6 PM - 7 PM",
+  "7 PM - 8 PM",
+];
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -102,6 +111,11 @@ const Home = () => {
 
   const [allBookings, setAllBookings] = useState(() => {
     const stored = localStorage.getItem("allBookings");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [blockedSlots, setBlockedSlots] = useState(() => {
+    const stored = localStorage.getItem("blockedSlots");
     return stored ? JSON.parse(stored) : [];
   });
 
@@ -127,6 +141,16 @@ const Home = () => {
     };
 
     fetchTurfs();
+
+    const storedBookings = localStorage.getItem("allBookings");
+    if (storedBookings) {
+      setAllBookings(JSON.parse(storedBookings));
+    }
+
+    const storedBlockedSlots = localStorage.getItem("blockedSlots");
+    if (storedBlockedSlots) {
+      setBlockedSlots(JSON.parse(storedBlockedSlots));
+    }
   }, []);
 
   const filteredTurfs = turfs.filter(
@@ -134,15 +158,6 @@ const Home = () => {
       turf.name.toLowerCase().includes(searchName.toLowerCase()) &&
       turf.location.toLowerCase().includes(searchLocation.toLowerCase())
   );
-
-  const timeSlots = [
-    "6 AM - 7 AM",
-    "7 AM - 8 AM",
-    "8 AM - 9 AM",
-    "5 PM - 6 PM",
-    "6 PM - 7 PM",
-    "7 PM - 8 PM",
-  ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -171,6 +186,7 @@ const Home = () => {
     <div className="home-container">
       <nav className="navbar">
         <h2 className="logo">⚽ Turf Booking</h2>
+
         <div className="nav-actions">
           <button className="my-bookings-btn" onClick={() => setShowBookings(true)}>
             My Bookings
@@ -193,6 +209,7 @@ const Home = () => {
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
         />
+
         <input
           type="text"
           placeholder="Search by Location"
@@ -210,11 +227,13 @@ const Home = () => {
           filteredTurfs.map((turf) => (
             <div key={turf._id || turf.id} className="turf-card">
               <img src={turf.image} alt={turf.name} />
+
               <div className="turf-info">
                 <h3>{turf.name}</h3>
                 <p>{turf.location}</p>
                 <p className="price">₹{turf.pricePerHour} / hour</p>
                 {turf.description && <p>{turf.description}</p>}
+
                 <button className="book-btn" onClick={() => openModal(turf)}>
                   Book Now
                 </button>
@@ -247,16 +266,23 @@ const Home = () => {
                     b.time === slot
                 );
 
+                const isBlocked = blockedSlots.find(
+                  (b) =>
+                    String(b.turfId) === String(turfKey) &&
+                    b.date === date &&
+                    b.time === slot
+                );
+
                 return (
                   <button
                     key={slot}
-                    disabled={isBooked}
+                    disabled={isBooked || isBlocked}
                     className={`slot-btn ${time === slot ? "selected" : ""} ${
-                      isBooked ? "booked" : ""
+                      isBooked || isBlocked ? "booked" : ""
                     }`}
                     onClick={() => setTime(slot)}
                   >
-                    {isBooked ? "Not Available" : slot}
+                    {isBooked || isBlocked ? "Not Available" : slot}
                   </button>
                 );
               })}
@@ -268,11 +294,32 @@ const Home = () => {
                 onClick={() => {
                   if (!date || !time) return alert("Select date & slot");
 
+                  const turfKey = selectedTurf._id || selectedTurf.id;
+
+                  const isBooked = allBookings.find(
+                    (b) =>
+                      String(b.turfId) === String(turfKey) &&
+                      b.date === date &&
+                      b.time === time
+                  );
+
+                  const isBlocked = blockedSlots.find(
+                    (b) =>
+                      String(b.turfId) === String(turfKey) &&
+                      b.date === date &&
+                      b.time === time
+                  );
+
+                  if (isBooked || isBlocked) {
+                    alert("This slot is not available");
+                    return;
+                  }
+
                   navigate("/payment", {
                     state: {
                       selectedTurf: {
                         ...selectedTurf,
-                        id: selectedTurf._id || selectedTurf.id,
+                        id: turfKey,
                       },
                       date,
                       time,
